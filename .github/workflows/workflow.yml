@@ -22,7 +22,10 @@ jobs:
           ls -a
       - name: Checkout code
         uses: actions/checkout@v3
+        with:
+          path: test
       - name: Test path 3
         run: |
+          cd test
           pwd
           ls -a
