@@ -1,5 +1,5 @@
 name: workflow.yml
-on: push
+on: [push,workflow_dispatch]
 
 jobs:
   test:
@@ -29,3 +29,11 @@ jobs:
           cd test
           pwd
           ls -a
+      - name: Print run number
+        run: |
+          RUN_COUNT=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+          "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs?branch=$BRANCH_NAME" \
+          | jq '.total_count')
+          RUN_NUMBER=$((RUN_COUNT + 1))
+          echo "BRANCH_RUN_NUMBER=$RUN_NUMBER" >> $GITHUB_ENV
+          echo "Branch-specific run number: $RUN_NUMBER"
