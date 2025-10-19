@@ -1,8 +1,7 @@
 name: deploy-docker
 on:
   release:
-    types:
-      - published
+    types: [published]
 
 jobs:
   build-and-push:
@@ -20,45 +19,45 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
       - name: Determine Docker tags
         id: docker-tags
         run: |
-          # Get the release tag
           RELEASE_TAG=${GITHUB_REF#refs/tags/}
-          echo "release_tag=$RELEASE_TAG" >> $GITHUB_OUTPUT
-
-          # Get the branch the release was created from
           BRANCH=$(jq -r '.release.target_commitish' "$GITHUB_EVENT_PATH")
-          echo "branch=$BRANCH"
 
-          # Set tags
+          echo "release_tag=$RELEASE_TAG" >> $GITHUB_OUTPUT
+          echo "branch=$BRANCH" >> $GITHUB_OUTPUT
+
           if [ "$BRANCH" = "main" ]; then
             echo "tags=latest,$RELEASE_TAG" >> $GITHUB_OUTPUT
           else
             echo "tags=$RELEASE_TAG" >> $GITHUB_OUTPUT
           fi
+
       - name: Ensure Docker username secret is set
         run: |
           if [ -z "${{ secrets.DOCKER_HUB_USERNAME }}" ]; then
-            echo "::error::DOCKER_HUB_USERNAME secret is not set. This will produce an invalid image tag like '/repo:tag'"
+            echo "::error::DOCKER_HUB_USERNAME secret is not set."
             exit 1
-          else
-            echo "Docker username secret is set"
           fi
 
-      - name: Show computed Docker tags (debug)
-        if: always()
+      - name: Debug Docker tags
         run: |
           echo "RELEASE_TAG=${{ steps.docker-tags.outputs.release_tag }}"
           echo "BRANCH=${{ steps.docker-tags.outputs.branch }}"
           echo "TAGS=${{ steps.docker-tags.outputs.tags }}"
-          echo "IMAGE (without username)=${{ github.event.repository.name }}:${{ steps.docker-tags.outputs.tags }}"
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
           context: .
           push: true
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/${{ github.event.repository.name }}:${{ steps.docker-tags.outputs.tags }}
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/${{ github.event.repository.name }}:${{ steps.docker-tags.outputs.release_tag }}
+
+          build-args: |
+            LATEST_TAG=${{ steps.docker-tags.outputs.branch == 'main' && 'latest' || '' }}
+
       - name: CI verify docker push permission (test)
         run: |
           docker pull alpine:3.18
