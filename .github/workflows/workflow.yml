@@ -37,9 +37,7 @@ jobs:
         run: |
           BRANCH=${GITHUB_REF_NAME}
           REPO=${GITHUB_REPOSITORY}
-        # Count workflow runs on this branch
           RUN_NUMBER=$(gh run list --repo $REPO --branch $BRANCH --json databaseId --limit 1000 | jq '. | length')
-        # Increment to include current run
           BRANCH_RUN_NUMBER=$((RUN_NUMBER + 1))
           echo "Branch: $BRANCH"
           echo "Branch-specific run number: $BRANCH_RUN_NUMBER"
