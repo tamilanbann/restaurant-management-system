@@ -48,7 +48,6 @@ jobs:
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/${{ github.event.repository.name }}:${{ steps.docker-tags.outputs.release_tag }}
 
       - name: CI verify docker push permission (test)
-        if: ${{ steps.docker-tags.outputs.branch == 'main' }}
         run: |
           if [ "$(jq -r '.release.target_commitish' "$GITHUB_EVENT_PATH")" != "main" ]; then
             docker tag ${{ secrets.DOCKER_HUB_USERNAME }}/${{ github.event.repository.name }}:${{ steps.docker-tags.outputs.release_tag }} ${{ secrets.DOCKER_HUB_USERNAME }}/${{ github.event.repository.name }}:latest
