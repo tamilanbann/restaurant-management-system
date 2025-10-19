@@ -32,8 +32,8 @@ jobs:
       - name: Print run number
         run: |
           RUN_COUNT=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
-          "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/${WORKFLOW_FILE}/runs?branch=$BRANCH_NAME&status=completed&per_page=1" \
-          | jq '.total_count')
+          "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/${WORKFLOW_FILE}/runs?branch=$BRANCH_NAME&status=completed&per_page=100" \
+          | jq '.workflow_runs | length')
           RUN_NUMBER=$((RUN_COUNT + 1))
           echo "BRANCH_RUN_NUMBER=$RUN_NUMBER" >> $GITHUB_ENV
           echo "Branch-specific run number: $RUN_NUMBER"
