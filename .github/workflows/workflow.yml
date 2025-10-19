@@ -31,6 +31,8 @@ jobs:
           ls -a
       - name: Print run number
         run: |
+          BRANCH_NAME=${GITHUB_REF##*/}
+          WORKFLOW_FILE=workflow.yml   # Your workflow filename
           RUN_COUNT=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
           "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/${WORKFLOW_FILE}/runs?branch=$BRANCH_NAME&status=completed&per_page=100" \
           | jq '.workflow_runs | length')
