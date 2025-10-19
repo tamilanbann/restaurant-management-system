@@ -32,13 +32,16 @@ jobs:
       - name: Install GitHub CLI
         run: sudo apt-get install -y gh
       - name: Get branch-specific run number
+        id: determinerun
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           BRANCH=${GITHUB_REF_NAME}
           REPO=${GITHUB_REPOSITORY}
           RUN_NUMBER=$(gh run list --repo $REPO --branch $BRANCH --json databaseId --limit 1000 | jq '. | length')
-          BRANCH_RUN_NUMBER=$((RUN_NUMBER + 1))
+          BRANCH_RUN_NUMBER=$((RUN_NUMBER))
           echo "Branch: $BRANCH"
           echo "Branch-specific run number: $BRANCH_RUN_NUMBER"
           echo "branch_run_number=$BRANCH_RUN_NUMBER" >> $GITHUB_OUTPUT
+      - name: print env variable
+        run: "The output from determinerun is ${{ steps.determinerun.outputs.branch_run_number }}"
