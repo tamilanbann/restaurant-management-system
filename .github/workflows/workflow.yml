@@ -44,4 +44,4 @@ jobs:
           echo "Branch-specific run number: $BRANCH_RUN_NUMBER"
           echo "branch_run_number=$BRANCH_RUN_NUMBER" >> $GITHUB_OUTPUT
       - name: print env variable
-        run: "The output from determinerun is ${{ steps.determinerun.outputs.branch_run_number }}"
+        run: echo "The output from determinerun is ${{ steps.determinerun.outputs.branch_run_number }}"
