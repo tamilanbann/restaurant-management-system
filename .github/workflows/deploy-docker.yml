@@ -59,3 +59,8 @@ jobs:
           context: .
           push: true
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/${{ github.event.repository.name }}:${{ steps.docker-tags.outputs.tags }}
+      - name: CI verify docker push permission (test)
+        run: |
+          docker pull alpine:3.18
+          docker tag alpine:3.18 ${{ secrets.DOCKER_HUB_USERNAME }}/${{ github.event.repository.name }}:ci-push-test
+          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/${{ github.event.repository.name }}:ci-push-test
