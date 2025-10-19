@@ -33,7 +33,7 @@ jobs:
 
           # Set tags
           if [ "$BRANCH" = "main" ]; then
-            echo "tags=$RELEASE_TAG,latest" >> $GITHUB_OUTPUT
+            echo "tags=latest,$RELEASE_TAG" >> $GITHUB_OUTPUT
           else
             echo "tags=$RELEASE_TAG" >> $GITHUB_OUTPUT
           fi
