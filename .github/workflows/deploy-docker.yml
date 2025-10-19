@@ -37,6 +37,22 @@ jobs:
           else
             echo "tags=$RELEASE_TAG" >> $GITHUB_OUTPUT
           fi
+      - name: Ensure Docker username secret is set
+        run: |
+          if [ -z "${{ secrets.DOCKER_HUB_USERNAME }}" ]; then
+            echo "::error::DOCKER_HUB_USERNAME secret is not set. This will produce an invalid image tag like '/repo:tag'"
+            exit 1
+          else
+            echo "Docker username secret is set"
+          fi
+
+      - name: Show computed Docker tags (debug)
+        if: always()
+        run: |
+          echo "RELEASE_TAG=${{ steps.docker-tags.outputs.release_tag }}"
+          echo "BRANCH=${{ steps.docker-tags.outputs.branch }}"
+          echo "TAGS=${{ steps.docker-tags.outputs.tags }}"
+          echo "IMAGE (without username)=${{ github.event.repository.name }}:${{ steps.docker-tags.outputs.tags }}"
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
