@@ -51,8 +51,9 @@ jobs:
         run: |
           BRANCH=$(jq -r '.release.target_commitish' "$GITHUB_EVENT_PATH")
           echo "BRANCH=$BRANCH"
-            if [ "$BRANCH" = "main" ]; then
+          if [ "$BRANCH" = "main" ]; then
             echo "Pushing latest tag for main branch"
+            docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/${{ github.event.repository.name }}:${{ steps.docker-tags.outputs.release_tag }}
             docker tag ${{ secrets.DOCKER_HUB_USERNAME }}/${{ github.event.repository.name }}:${{ steps.docker-tags.outputs.release_tag }} ${{ secrets.DOCKER_HUB_USERNAME }}/${{ github.event.repository.name }}:latest
             docker push ${{ secrets.DOCKER_HUB_USERNAME }}/${{ github.event.repository.name }}:latest
           fi
